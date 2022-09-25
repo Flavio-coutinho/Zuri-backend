@@ -2,11 +2,14 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Zuri.Dtos;
+using Zuri.Models;
+using Zuri.Services;
 
 namespace Zuri.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+
     public class LoginController : ControllerBase
     {
         private readonly ILogger<LoginController> _logger;
@@ -18,37 +21,48 @@ namespace Zuri.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Login([FromBody] LoginRequisitionDto loginRequisition)
+        public IActionResult EfetuarLogin([FromBody] LoginRequisicaoDto loginRequisition)
         {
             try
             {
-                if(!String.IsNullOrEmpty(loginRequisition.Password) && !String.IsNullOrEmpty(loginRequisition.Email) &&
-                    !String.IsNullOrWhiteSpace(loginRequisition.Password) && !String.IsNullOrWhiteSpace(loginRequisition.Email))
+                if(!String.IsNullOrEmpty(loginRequisition.Senha) && !String.IsNullOrEmpty(loginRequisition.Email) &&
+                    !String.IsNullOrWhiteSpace(loginRequisition.Senha) && !String.IsNullOrWhiteSpace(loginRequisition.Email))
                 {
                     string email = "coutinho@gmail.com";
-                    string password = "coutinho1996";
+                    string senha = "coutinho1996";
 
-                    if(loginRequisition.Email == email && loginRequisition.Password == password)
+                    if(loginRequisition.Email == email && loginRequisition.Senha == senha)
                     {
-                        return Ok(new LoginRequisitionDto()
+
+                        Usuario usuario = new Usuario()
                         {
-                            Email = email,
+                            Email = loginRequisition.Email,
+                            Id = 26,
                             Nome = "Flavio Coutinho"
-                        }) ;
+                        };
+
+                        return Ok(new LoginRespostaDto()
+                        {
+                            Email = usuario.Email,
+                            Nome = usuario.Nome,
+                            Token = TokenService.CriarToken(usuario)
+                        });
                     }
                     else
                     {
-                        return BadRequest(new ErrorResponseDto()
+                        return BadRequest(new ErrorRespostaDto()
                         {
-                            Description = "Invalid email or password"
+                            Descricao = "Email ou senha inválida",
+                            Status = StatusCodes.Status400BadRequest,
+
                         });
                     }
                 }
                 else
                 {
-                    return BadRequest(new ErrorResponseDto()
+                    return BadRequest(new ErrorRespostaDto()
                     {
-                        Description = "User did not fill in the login fields correctly",
+                        Descricao = "Usuário não preencheu o campo de login correctamente",
                         Status = StatusCodes.Status400BadRequest,
                     });
                 }
@@ -56,10 +70,10 @@ namespace Zuri.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("There was an error logging in: " + ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseDto()
+                _logger.LogError("Ocorreu um erro no login " + ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorRespostaDto()
                 {
-                    Description = "Error ocurred while logging in",
+                    Descricao = "Ocorreu um erro ao fazer o login",
                     Status = StatusCodes.Status500InternalServerError,
                 });
             }

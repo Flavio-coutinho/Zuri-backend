@@ -1,8 +1,8 @@
 ﻿namespace Zuri.Dtos
 {
-    public class LoginResponseDto
+    public class LoginRequisicaoDto
     {
         public string Email { get; set; }
-        public string Nome { get; set; }
+        public string Senha { get; set; }
     }
 }
