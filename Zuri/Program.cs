@@ -4,6 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Zuri;
 using Zuri.Models;
+using Zuri.Repository;
+using Zuri.Repository.Impl;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,8 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ZuriContext>(option => option.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryImpl>();
 
 var chaveCriptografia = Encoding.ASCII.GetBytes(ChaveJWT.ChaveSecreta);
 builder.Services.AddAuthentication(auth =>
