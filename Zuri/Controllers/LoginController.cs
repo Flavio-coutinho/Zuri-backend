@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Zuri.Dtos;
 using Zuri.Models;
+using Zuri.Repository;
 using Zuri.Services;
+using Zuri.Utils;
 
 namespace Zuri.Controllers
 {
@@ -13,34 +15,27 @@ namespace Zuri.Controllers
     public class LoginController : ControllerBase
     {
         private readonly ILogger<LoginController> _logger;
-
-        public LoginController (ILogger<LoginController> logger)
+        private readonly IUsuarioRepository _usuarioRepository;
+        public LoginController (ILogger<LoginController> logger, IUsuarioRepository usuarioRepository)
         {
             _logger = logger;
+            _usuarioRepository = usuarioRepository;
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult EfetuarLogin([FromBody] LoginRequisicaoDto loginRequisition)
+        public IActionResult EfetuarLogin([FromBody] LoginRequisicaoDto loginrequisicao)
         {
             try
             {
-                if(!String.IsNullOrEmpty(loginRequisition.Senha) && !String.IsNullOrEmpty(loginRequisition.Email) &&
-                    !String.IsNullOrWhiteSpace(loginRequisition.Senha) && !String.IsNullOrWhiteSpace(loginRequisition.Email))
+                if(!String.IsNullOrEmpty(loginrequisicao.Senha) && !String.IsNullOrEmpty(loginrequisicao.Email) &&
+                    !String.IsNullOrWhiteSpace(loginrequisicao.Senha) && !String.IsNullOrWhiteSpace(loginrequisicao.Email))
                 {
-                    string email = "coutinho@gmail.com";
-                    string senha = "coutinho1996";
 
-                    if(loginRequisition.Email == email && loginRequisition.Senha == senha)
+                    Usuario usuario = _usuarioRepository.GetUsuarioPorLogin(loginrequisicao.Email.ToLower(), MD5Utils.GerarHashMD5(loginrequisicao.Senha));
+
+                    if(usuario != null)
                     {
-
-                        Usuario usuario = new Usuario()
-                        {
-                            Email = loginRequisition.Email,
-                            Id = 26,
-                            Nome = "Flavio Coutinho"
-                        };
-
                         return Ok(new LoginRespostaDto()
                         {
                             Email = usuario.Email,
@@ -57,6 +52,8 @@ namespace Zuri.Controllers
 
                         });
                     }
+                        
+                    
                 }
                 else
                 {

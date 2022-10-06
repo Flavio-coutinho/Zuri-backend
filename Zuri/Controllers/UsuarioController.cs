@@ -32,7 +32,7 @@ namespace Zuri.Controllers
                     Id = 21
                 };
 
-                return Ok(usuario);
+                return Ok("Usuário foi salvo com sucesso");
             }
             catch (Exception e)
             {
@@ -47,6 +47,7 @@ namespace Zuri.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public IActionResult SalvarUsuario([FromBody] Usuario usuario)
         {
             try

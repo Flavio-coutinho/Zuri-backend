@@ -12,6 +12,11 @@ namespace Zuri.Repository.Impl
             _context = context;
         }
 
+        public Usuario GetUsuarioPorLogin(string email, string senha)
+        {
+            return _context.Usuarios.FirstOrDefault(u => u.Email == email && u.Senha == senha);
+        }
+
         public void Salvar(Usuario usuario)
         {
             _context.Add(usuario);
