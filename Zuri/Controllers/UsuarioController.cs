@@ -11,12 +11,11 @@ namespace Zuri.Controllers
     public class UsuarioController : BaseController
     {
         public readonly ILogger<UsuarioController> _logger;
-        public readonly IUsuarioRepository _usuarioRepository;
 
-        public UsuarioController(ILogger<UsuarioController> logger, IUsuarioRepository usuarioRepository)
+        public UsuarioController(ILogger<UsuarioController> logger, 
+            IUsuarioRepository usuarioRepository) : base(usuarioRepository)
         {
             _logger = logger;
-            _usuarioRepository = usuarioRepository;
         }
 
         [HttpGet]
@@ -25,14 +24,13 @@ namespace Zuri.Controllers
 
             try
             {
-                Usuario usuario = new Usuario()
-                {
-                    Email = "coutinho@gmail.com",
-                    Nome = "Flavio Coutinho",
-                    Id = 21
-                };
+                Usuario usuario = LerToken();
 
-                return Ok("Usuário foi salvo com sucesso");
+                return Ok(new UsuarioRespostaDto
+                {
+                    Nome = usuario.Nome,
+                    Email = usuario.Email
+                });
             }
             catch (Exception e)
             {
@@ -99,7 +97,7 @@ namespace Zuri.Controllers
                 }
 
 
-                return Ok(usuario);
+                return Ok("Usuário foi salvo com sucesso");
             }
             catch(Exception e)
             {
